@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#111827"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="TERU GOLF"/>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>TERU TERU GOLF LAS VEGAS</title>
+  <style>
+    :root{
+      --bg:#071018;--card:#111827;--card2:#182230;--text:#fff;--muted:#a7b0bd;
+      --line:#2a3442;--gold:#d6a640;--red:#e11d2e;--green:#22c55e;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{margin:0;background:linear-gradient(180deg,#05080d,#101827);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+    header{position:sticky;top:0;z-index:10;text-align:center;padding:calc(14px + env(safe-area-inset-top)) 14px 12px;background:rgba(7,16,24,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    h1{margin:0;font-size:21px;letter-spacing:.7px;font-weight:950}
+    .sub{font-size:12px;color:var(--gold);margin-top:4px;font-weight:800}
+    main{max-width:820px;margin:0 auto;padding:0 12px 34px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin:12px 0;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+    .title{font-size:15px;font-weight:950;margin-bottom:10px;color:#fff}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+    input,select{width:100%;padding:13px 10px;border:1px solid var(--line);border-radius:13px;background:#0b1220;color:#fff;font-size:17px}
+    .player-row,.order-row{display:grid;gap:8px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:16px;background:var(--card2);margin-bottom:8px}
+    .order-row{grid-template-columns:58px 1fr}
+    .order-num{font-size:18px;font-weight:950;text-align:center;color:var(--gold);padding-bottom:13px}
+    .score-card{border:1px solid var(--line);border-radius:18px;background:var(--card2);padding:12px;margin-bottom:10px}
+    .score-head{display:grid;grid-template-columns:1fr 86px;gap:8px;align-items:end;margin-bottom:4px}
+    .name-label{font-size:17px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .team-badge{display:inline-block;margin-top:4px;font-size:11px;color:#111;background:var(--gold);border-radius:999px;padding:3px 8px;font-weight:950}
+    button{width:100%;border:0;border-radius:16px;padding:15px;font-size:17px;font-weight:950;color:#111;background:var(--gold);margin-top:9px}
+    button.dark{background:#334155;color:#fff} button.red{background:var(--red);color:#fff}
+    .result{text-align:center;padding:18px 10px}
+    .big{font-size:34px;font-weight:950;margin:8px 0}
+    .money{font-size:27px;font-weight:950;margin-top:4px;color:var(--gold)}
+    .small{font-size:13px;color:var(--muted);line-height:1.65}
+    .pill{display:inline-block;background:#1f2937;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:950;margin:3px}
+    .team-view{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .team-box{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:11px;text-align:center}
+    .team-box strong{display:block;font-size:14px;margin-bottom:5px}.team-box .num{font-size:28px;font-weight:950}
+    .history-row{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+    .history-row:last-child{border-bottom:0}.win{color:var(--green);font-weight:950}.lose{color:var(--red);font-weight:950}
+    .warn{background:#271f0d;border:1px solid #5c4518;border-radius:14px;padding:10px;font-size:13px;line-height:1.55;margin-top:10px;color:#f5d58a}
+    .hole-list{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
+    .hole-chip{border:1px solid var(--line);border-radius:12px;padding:8px 3px;text-align:center;font-size:12px;background:#0b1220;color:var(--muted)}
+    .hole-chip.done{background:#12301f;color:#7df0a8;font-weight:900}
+    @media(max-width:620px){.grid,.team-view{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.big{font-size:31px}.hole-list{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>TERU TERU GOLF</h1>
+  <div class="sub">LAS VEGAS SCORE APP</div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="title">プレイヤー名</div>
+    <div class="grid">
+      <div class="player-row"><label>プレイヤー1</label><input id="p1name" value="てるや"></div>
+      <div class="player-row"><label>プレイヤー2</label><input id="p2name" value="佐藤"></div>
+      <div class="player-row"><label>プレイヤー3</label><input id="p3name" value="田中"></div>
+      <div class="player-row"><label>プレイヤー4</label><input id="p4name" value="鈴木"></div>
+    </div>
+    <button class="dark" onclick="saveNames()">名前を保存</button>
+  </div>
+
+  <div class="card">
+    <div class="title">このホールの打順</div>
+    <div class="grid">
+      <div class="order-row"><div class="order-num">1番</div><div><label>プレイヤー</label><select id="order1"></select></div></div>
+      <div class="order-row"><div class="order-num">2番</div><div><label>プレイヤー</label><select id="order2"></select></div></div>
+      <div class="order-row"><div class="order-num">3番</div><div><label>プレイヤー</label><select id="order3"></select></div></div>
+      <div class="order-row"><div class="order-num">4番</div><div><label>プレイヤー</label><select id="order4"></select></div></div>
+    </div>
+    <div class="warn">チームは自動で「1番・4番」vs「2番・3番」。記録すると次ホール用に打順が回ります。</div>
+    <button class="dark" onclick="rotateOrder()">手動で打順を回す</button>
+  </div>
+
+  <div class="card">
+    <div class="title">設定</div>
+    <div class="grid3">
+      <div><label>1点の金額</label><input id="yen" type="number" value="10" min="0"></div>
+      <div><label>ホール</label><input id="hole" type="number" value="1" min="1" max="18"></div>
+      <div><label>丸め方</label><select id="roundMode"><option value="none">そのまま</option><option value="up5" selected>5点切り上げ</option><option value="down10">10点切り下げ</option><option value="up10">10点切り上げ</option></select></div>
+      <div><label>タコ発動打数</label><input id="takoScore" type="number" value="8" min="1"></div>
+      <div><label>タコ設定</label><select id="takoMode"><option value="reverse" selected>反転する</option><option value="none">反転しない</option></select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="title">スコア入力</div>
+    <div id="scoreArea" class="grid"></div>
+    <button onclick="calculate()">計算</button>
+    <button class="dark" onclick="saveHole()">このホールを記録</button>
+  </div>
+
+  <div class="card result">
+    <div class="small">結果</div>
+    <div class="big" id="winner">---</div>
+    <div class="money" id="points">0点</div>
+    <div class="team-view">
+      <div class="team-box"><strong id="teamAname">1番・4番</strong><div class="num" id="teamAnum">--</div></div>
+      <div class="team-box"><strong id="teamBname">2番・3番</strong><div class="num" id="teamBnum">--</div></div>
+    </div>
+    <div class="small" id="detail" style="margin-top:10px;">スコアを入力して計算してください</div>
+    <div id="warn" class="warn" style="display:none;"></div>
+  </div>
+
+  <div class="card">
+    <div class="title">18ホール自動集計</div>
+    <div class="grid">
+      <div class="result"><div class="small">1番・4番側 合計</div><div class="big" id="totalA">0</div></div>
+      <div class="result"><div class="small">2番・3番側 合計</div><div class="big" id="totalB">0</div></div>
+    </div>
+    <div class="small" id="roundSummary">0 / 18 ホール記録済み</div>
+    <div class="hole-list" id="holeList"></div>
+    <button class="red" onclick="resetAll()">ラウンドをリセット</button>
+  </div>
+
+  <div class="card">
+    <div class="title">記録</div>
+    <div id="history" class="small">まだ記録はありません</div>
+  </div>
+</main>
+
+<script>
+let totalA=Number(localStorage.getItem("ttg_totalA")||0);
+let totalB=Number(localStorage.getItem("ttg_totalB")||0);
+let history=JSON.parse(localStorage.getItem("ttg_history")||"[]");
+function val(id){return Number(document.getElementById(id).value||0)}
+function text(id){return document.getElementById(id).value.trim()}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function getName(i){return text(`p${i}name`)||`プレイヤー${i}`}
+function saveNames(){localStorage.setItem("ttg_names",JSON.stringify([1,2,3,4].map(i=>getName(i))));renderOrderSelects(true);renderScoreInputs();calculate()}
+function loadNames(){const n=JSON.parse(localStorage.getItem("ttg_names")||"null");if(n)n.forEach((x,i)=>document.getElementById(`p${i+1}name`).value=x)}
+function getOrder(){return [1,2,3,4].map(i=>Number(document.getElementById(`order${i}`).value))}
+function getOrderSafe(){try{return getOrder()}catch(e){return [1,2,3,4]}}
+function saveOrder(){localStorage.setItem("ttg_order",JSON.stringify(getOrder()))}
+function renderOrderSelects(keep=false){
+  const prev=keep?getOrderSafe():JSON.parse(localStorage.getItem("ttg_order")||"[1,2,3,4]");
+  const opts=[1,2,3,4].map(i=>({id:i,name:getName(i)}));
+  for(let pos=1;pos<=4;pos++){
+    const sel=document.getElementById(`order${pos}`);
+    sel.innerHTML=opts.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+    sel.value=prev[pos-1]||pos;
+    sel.onchange=()=>{saveOrder();renderScoreInputs();calculate()}
+  }
+}
+function rotateOrder(){const o=getOrder();const n=[o[1],o[2],o[3],o[0]];for(let i=1;i<=4;i++)document.getElementById(`order${i}`).value=n[i-1];saveOrder();renderScoreInputs();calculate()}
+function renderScoreInputs(){
+  const area=document.getElementById("scoreArea");const order=getOrderSafe();let html="";
+  order.forEach((pid,idx)=>{
+    const pos=idx+1;const side=(pos===1||pos===4)?"1番・4番側":"2番・3番側";
+    html+=`<div class="score-card"><div class="score-head"><div><div class="name-label">${pos}番　${escapeHtml(getName(pid))}</div><span class="team-badge">${side}</span></div><div><label>打数</label><input id="p${pid}score" type="number" value="4" min="1"></div></div></div>`;
+  });
+  area.innerHTML=html;
+}
+function getTeamPlayers(){
+  const order=getOrder();const warn=document.getElementById("warn");
+  if(new Set(order).size!==4){warn.style.display="block";warn.textContent="打順に同じ人が入ってるよ。4人それぞれ別にしてね。";return null}
+  warn.style.display="none";
+  const p=(id,pos)=>({id,pos,name:getName(id),score:val(`p${id}score`)||0});
+  return {a:[p(order[0],1),p(order[3],4)],b:[p(order[1],2),p(order[2],3)]};
+}
+function makeVegasNumber(scores){
+  const low=Math.min(...scores), high=Math.max(...scores);
+  let num=Number(String(low)+String(high));
+  if(document.getElementById("takoMode").value==="reverse"&&high>=val("takoScore"))num=Number(String(high)+String(low));
+  return num;
+}
+function roundPoints(diff){
+  const m=document.getElementById("roundMode").value;
+  if(m==="none")return diff;if(m==="up5")return Math.ceil(diff/5)*5;if(m==="down10")return Math.floor(diff/10)*10;if(m==="up10")return Math.ceil(diff/10)*10;return diff;
+}
+function teamLabel(ps){return ps.map(p=>p.name).join("・")}
+function calculate(){
+  const teams=getTeamPlayers();if(!teams){document.getElementById("winner").textContent="打順確認";document.getElementById("points").textContent="--";return null}
+  const aNum=makeVegasNumber(teams.a.map(p=>p.score));const bNum=makeVegasNumber(teams.b.map(p=>p.score));
+  const rawDiff=Math.abs(aNum-bNum);const basePoint=roundPoints(rawDiff);let aPoint=0,bPoint=0;
+  if(aNum<bNum)aPoint+=basePoint;if(bNum<aNum)bPoint+=basePoint;
+  const net=aPoint-bPoint;const aName=teamLabel(teams.a), bName=teamLabel(teams.b);
+  let winner="引き分け";if(net>0)winner=aName+" +"+net+"点";if(net<0)winner=bName+" +"+Math.abs(net)+"点";
+  const yen=val("yen");
+  document.getElementById("winner").textContent=winner;
+  document.getElementById("points").textContent=yen>0?(Math.abs(net)*yen).toLocaleString()+"円":Math.abs(net)+"点";
+  document.getElementById("teamAname").textContent="1番・4番　"+aName;
+  document.getElementById("teamBname").textContent="2番・3番　"+bName;
+  document.getElementById("teamAnum").textContent=aNum;document.getElementById("teamBnum").textContent=bNum;
+  document.getElementById("detail").innerHTML=`<span class="pill">差 ${rawDiff} → ${basePoint}点</span>`;
+  return {hole:val("hole"),aName,bName,aNum,bNum,rawDiff,basePoint,net,yen,order:getOrder()};
+}
+function saveHole(){
+  if(history.length>=18){alert("18ホール記録済みです。新しく始める場合はリセットしてください。");return}
+  const r=calculate();if(!r)return;
+  const idx=history.findIndex(x=>x.hole===r.hole);
+  if(idx>=0){const old=history[idx];if(old.net>0)totalA-=old.net;if(old.net<0)totalB-=Math.abs(old.net);history.splice(idx,1)}
+  if(r.net>0)totalA+=r.net;if(r.net<0)totalB+=Math.abs(r.net);
+  history.push(r);history.sort((a,b)=>a.hole-b.hole);saveState();
+  document.getElementById("hole").value=Math.min(18,val("hole")+1);rotateOrder();render();
+}
+function saveState(){localStorage.setItem("ttg_totalA",totalA);localStorage.setItem("ttg_totalB",totalB);localStorage.setItem("ttg_history",JSON.stringify(history))}
+function render(){
+  document.getElementById("totalA").textContent=totalA;document.getElementById("totalB").textContent=totalB;
+  document.getElementById("roundSummary").textContent=`${history.length} / 18 ホール記録済み`;
+  const holeList=document.getElementById("holeList");holeList.innerHTML="";
+  for(let i=1;i<=18;i++){const r=history.find(x=>x.hole===i);const div=document.createElement("div");div.className="hole-chip"+(r?" done":"");div.textContent=r?`${i}H 記録済`:`${i}H`;div.onclick=()=>{document.getElementById("hole").value=i};holeList.appendChild(div)}
+  const el=document.getElementById("history");
+  if(history.length===0){el.textContent="まだ記録はありません";return}
+  el.innerHTML=history.map(r=>{
+    const txt=r.net>0?`<span class="win">${escapeHtml(r.aName)} +${r.net}</span>`:r.net<0?`<span class="lose">${escapeHtml(r.bName)} +${Math.abs(r.net)}</span>`:`<span>±0</span>`;
+    return `<div class="history-row"><div>${r.hole}H</div><div>1・4番 ${escapeHtml(r.aName)}:${r.aNum}<br>2・3番 ${escapeHtml(r.bName)}:${r.bNum}<br><span class="small">差${r.rawDiff}→${r.basePoint}</span></div><div>${txt}</div></div>`;
+  }).join("");
+}
+function resetAll(){
+  if(!confirm("ラウンド記録をリセットしますか？"))return;
+  totalA=0;totalB=0;history=[];saveState();render();document.getElementById("hole").value=1;
+  document.getElementById("winner").textContent="---";document.getElementById("points").textContent="0点";document.getElementById("teamAnum").textContent="--";document.getElementById("teamBnum").textContent="--";document.getElementById("detail").textContent="スコアを入力して計算してください";
+}
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
+loadNames();renderOrderSelects(false);renderScoreInputs();render();calculate();
+</script>
+</body>
+</html>
