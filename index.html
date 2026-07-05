@@ -1,413 +1,379 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <meta name="theme-color" content="#1f7a4d"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="TERU GOLF"/>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <title>TERU TERU GOLF</title>
-  <style>
-    :root{
-      --bg:#f4f6f1;--card:#fff;--text:#111;--muted:#777;--line:#e6e6e6;
-      --green:#1f7a4d;--dark:#202020;--red:#c0392b;--soft:#edf7f1;--yellow:#fff8df;
-    }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
-    header{position:sticky;top:0;z-index:10;text-align:center;padding:calc(14px + env(safe-area-inset-top)) 14px 12px;background:rgba(244,246,241,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-    h1{margin:0;font-size:21px;letter-spacing:.6px;font-weight:950}
-    .sub{font-size:12px;color:var(--muted);margin-top:4px}
-    main{max-width:860px;margin:0 auto;padding:0 12px 34px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin:12px 0;box-shadow:0 2px 10px rgba(0,0,0,.035)}
-    .title{font-size:15px;font-weight:950;margin-bottom:10px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
-    input,select{width:100%;padding:13px 10px;border:1px solid var(--line);border-radius:13px;background:#fff;font-size:17px}
-    .player-row{padding:10px;border:1px solid var(--line);border-radius:16px;background:#fafafa;margin-bottom:8px}
-    .order-row{display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:16px;background:#fafafa;margin-bottom:8px}
-    .order-num{font-size:18px;font-weight:950;text-align:center;color:var(--green);padding-bottom:13px}
-    .score-card{border:1px solid var(--line);border-radius:18px;background:#fafafa;padding:12px;margin-bottom:10px}
-    .score-head{display:grid;grid-template-columns:1fr 88px;gap:8px;align-items:end;margin-bottom:9px}
-    .name-label{font-size:17px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .team-badge{display:inline-block;margin-top:4px;font-size:11px;color:var(--green);font-weight:900;background:var(--soft);border-radius:999px;padding:3px 8px}
-    .option-grid{display:grid;grid-template-columns:1fr;gap:7px}
-    .option{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px;font-weight:800}
-    .option small{color:var(--muted);font-size:11px;font-weight:700}
-    .option input{width:auto;transform:scale(1.25)}
-    button{width:100%;border:0;border-radius:16px;padding:15px;font-size:17px;font-weight:950;color:#fff;background:var(--green);margin-top:9px}
-    button.dark{background:var(--dark)} button.red{background:var(--red)} button.light{background:#555}
-    .result{text-align:center;padding:18px 10px}
-    .big{font-size:34px;font-weight:950;margin:8px 0}
-    .point-display{font-size:28px;font-weight:950;margin-top:4px}
-    .small{font-size:13px;color:var(--muted);line-height:1.65}
-    .pill{display:inline-block;background:var(--soft);color:var(--green);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:950;margin:3px}
-    .team-view{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-    .team-box{background:#fafafa;border:1px solid var(--line);border-radius:16px;padding:11px;text-align:center}
-    .team-box strong{display:block;font-size:14px;margin-bottom:5px}.team-box .num{font-size:28px;font-weight:950}
-    .total-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line);font-size:16px}
-    .total-row:last-child{border-bottom:0}.total-name{font-weight:900}.total-point{font-size:20px;font-weight:950}
-    .plus{color:var(--green)}.minus{color:var(--red)}
-    .history-row{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
-    .history-row:last-child{border-bottom:0}.win{color:var(--green);font-weight:950}.lose{color:var(--red);font-weight:950}
-    .option-record{margin-top:4px;color:#555;font-size:12px;line-height:1.55}
-    .note{font-size:12px;color:var(--muted);margin-top:8px}.warn{background:var(--yellow);border:1px solid #f0d98b;border-radius:14px;padding:10px;font-size:13px;line-height:1.55;margin-top:10px}
-    @media(max-width:620px){.grid,.team-view{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.big{font-size:31px}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TERU TERU GOLF LAS VEGAS</title>
+<style>
+:root{
+  --bg:#07101d;--card:#111a2a;--box:#172435;--input:#070e1a;--line:#2c3a50;
+  --txt:#f7f8fb;--muted:#9ca8b8;--gold:#e8bb3f;--green:#4ac789;--red:#ff6868;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;padding-bottom:30px}
+header{position:sticky;top:0;background:var(--bg);z-index:10;text-align:center;padding:28px 12px 20px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:24px;letter-spacing:3px;font-weight:900}.sub{color:var(--gold);font-size:13px;font-weight:900;letter-spacing:2px;margin-top:8px}
+main{max-width:850px;margin:auto;padding:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0}
+.title{font-size:19px;font-weight:900;margin-bottom:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+label{display:block;color:var(--muted);font-size:13px;font-weight:700;margin-bottom:6px}
+input,select{width:100%;background:var(--input);color:var(--txt);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:18px}
+button{width:100%;border:0;border-radius:18px;padding:17px 12px;font-size:18px;font-weight:900;margin-top:10px}
+.btn-main{background:var(--gold);color:#111}.btn-next{background:var(--green);color:#05130c}.btn-red{background:var(--red);color:#fff}
+.player,.scoreBox{background:var(--box);border:1px solid var(--line);border-radius:20px;padding:14px}.scoreHead{display:grid;grid-template-columns:1fr 92px;gap:10px;align-items:end;margin-bottom:12px}
+.nameLine{font-size:21px;font-weight:900}.badge{display:inline-block;background:var(--gold);color:#111;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900;margin-top:7px}
+.opt{display:flex;align-items:center;justify-content:space-between;background:var(--input);border:1px solid var(--line);border-radius:15px;padding:12px 14px;margin-top:8px;font-size:16px;font-weight:900}
+.opt span{color:var(--muted);font-size:12px}.opt input{width:30px;height:30px}
+.result{text-align:center}.winner{font-size:27px;font-weight:900;margin:10px 0;line-height:1.3}.points{font-size:27px;color:var(--gold);font-weight:900}
+.teamview{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.teambox{background:var(--box);border:1px solid var(--line);border-radius:18px;padding:12px;text-align:center}
+.teambox small{display:block;color:var(--muted);font-weight:700;margin-bottom:5px}.num{font-size:31px;font-weight:900}
+.small{font-size:13px;color:var(--muted);line-height:1.6}.pill{display:inline-block;background:rgba(232,187,63,.12);border:1px solid rgba(232,187,63,.35);color:#f5d47a;border-radius:999px;padding:6px 10px;margin:4px;font-size:12px;font-weight:900}
+.totalRow{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.totalRow:last-child{border-bottom:0}.plus{color:var(--green);font-weight:900}.minus{color:var(--red);font-weight:900}
+.historyRow{border-bottom:1px solid var(--line);padding:12px 0;font-size:14px;line-height:1.6}.historyRow:last-child{border-bottom:0}
+.warn{background:rgba(232,187,63,.12);border:1px solid rgba(232,187,63,.35);border-radius:15px;color:#f4d682;padding:10px;font-size:13px;line-height:1.5;margin-top:10px}
+@media(max-width:700px){.grid,.grid4,.teamview{grid-template-columns:1fr}.scoreHead{grid-template-columns:1fr 90px}}
+</style>
 </head>
 <body>
 <header>
   <h1>TERU TERU GOLF</h1>
-  <div class="sub">ラスベガス計算アプリ</div>
+  <div class="sub">LAS VEGAS SCORE APP</div>
 </header>
 
 <main>
   <div class="card">
+    <div class="warn">
+      ChatGPT内のプレビューでは計算ボタンが動かない場合があります。実際に使う時はSafariで開くか、GitHub Pagesにアップロードしてください。
+    </div>
+  </div>
+
+  <div class="card">
     <div class="title">プレイヤー名</div>
     <div class="grid">
-      <div class="player-row"><label>プレイヤー1</label><input id="p1name" value="てるや"></div>
-      <div class="player-row"><label>プレイヤー2</label><input id="p2name" value="佐藤"></div>
-      <div class="player-row"><label>プレイヤー3</label><input id="p3name" value="田中"></div>
-      <div class="player-row"><label>プレイヤー4</label><input id="p4name" value="鈴木"></div>
+      <div class="player"><label>プレイヤー1</label><input id="name1" value="てるや"></div>
+      <div class="player"><label>プレイヤー2</label><input id="name2" value="佐藤"></div>
+      <div class="player"><label>プレイヤー3</label><input id="name3" value="田中"></div>
+      <div class="player"><label>プレイヤー4</label><input id="name4" value="鈴木"></div>
     </div>
-    <button class="light" onclick="saveNames()">名前を保存</button>
+    <button class="btn-main" type="button" onclick="applyNames()">名前を反映</button>
   </div>
 
   <div class="card">
     <div class="title">このホールの打順</div>
-    <div class="grid">
-      <div class="order-row"><div class="order-num">1番</div><div><label>プレイヤー</label><select id="order1"></select></div></div>
-      <div class="order-row"><div class="order-num">2番</div><div><label>プレイヤー</label><select id="order2"></select></div></div>
-      <div class="order-row"><div class="order-num">3番</div><div><label>プレイヤー</label><select id="order3"></select></div></div>
-      <div class="order-row"><div class="order-num">4番</div><div><label>プレイヤー</label><select id="order4"></select></div></div>
+    <div class="grid4">
+      <div><label>1番</label>
+        <select id="order1" onchange="syncLabels()">
+          <option value="1" selected>てるや</option><option value="2">佐藤</option><option value="3">田中</option><option value="4">鈴木</option>
+        </select>
+      </div>
+      <div><label>2番</label>
+        <select id="order2" onchange="syncLabels()">
+          <option value="1">てるや</option><option value="2" selected>佐藤</option><option value="3">田中</option><option value="4">鈴木</option>
+        </select>
+      </div>
+      <div><label>3番</label>
+        <select id="order3" onchange="syncLabels()">
+          <option value="1">てるや</option><option value="2">佐藤</option><option value="3" selected>田中</option><option value="4">鈴木</option>
+        </select>
+      </div>
+      <div><label>4番</label>
+        <select id="order4" onchange="syncLabels()">
+          <option value="1">てるや</option><option value="2">佐藤</option><option value="3">田中</option><option value="4" selected>鈴木</option>
+        </select>
+      </div>
     </div>
-    <div class="warn">チームは自動で「1番・4番」vs「2番・3番」。記録すると、次ホールへ進んで打順も更新されます。</div>
-    <button class="light" onclick="advanceOrderOnly()">打順だけ次へ回す</button>
+    <div class="warn">チームは自動で 1番・4番 vs 2番・3番。記録後、次ホールの打順は前ホールのスコアが少ない順に更新。</div>
   </div>
 
   <div class="card">
     <div class="title">設定</div>
-    <div class="grid3">
-      <div><label>ホール</label><input id="hole" type="number" value="1" min="1" max="18"></div>
-      <div><label>オプション</label><select id="optionEnabled"><option value="on" selected>ON</option><option value="off">OFF</option></select></div>
-      <div><label>丸め方</label><select id="roundMode"><option value="none">そのまま</option><option value="up5" selected>5点切り上げ</option><option value="down10">10点切り下げ</option><option value="up10">10点切り上げ</option></select></div>
-    </div>
-    <div class="grid" style="margin-top:10px;">
-      <div><label>砂イチ</label><input id="sandPoint" type="number" value="10" min="0"></div>
-      <div><label>チップイン</label><input id="chipPoint" type="number" value="10" min="0"></div>
-      <div><label>ロングパット</label><input id="puttPoint" type="number" value="10" min="0"></div>
-      <div><label>タコ発動打数</label><input id="takoScore" type="number" value="8" min="1"></div>
-    </div>
-    <div style="margin-top:10px;">
-      <label>タコ設定</label>
-      <select id="takoMode"><option value="reverse" selected>反転する</option><option value="none">反転しない</option></select>
+    <div class="grid">
+      <div><label>ホール</label><input id="hole" type="number" value="1" min="1"></div>
+      <div><label>丸め方</label>
+        <select id="roundMode">
+          <option value="none">そのまま</option>
+          <option value="up5" selected>5点切り上げ</option>
+          <option value="down10">10点切り下げ</option>
+          <option value="up10">10点切り上げ</option>
+        </select>
+      </div>
+      <div><label>オプション</label><select id="optionOn"><option value="on" selected>ON</option><option value="off">OFF</option></select></div>
+      <div><label>次ホール打順</label><select id="nextMode"><option value="score" selected>スコア順</option><option value="rotate">単純ローテ</option><option value="keep">そのまま</option></select></div>
+      <div><label>砂イチ</label><input id="sandPt" type="number" value="10"></div>
+      <div><label>チップイン</label><input id="chipPt" type="number" value="10"></div>
+      <div><label>ロングパット</label><input id="puttPt" type="number" value="10"></div>
+      <div><label>タコ発動打数</label><input id="takoScore" type="number" value="8"></div>
+      <div><label>タコ設定</label><select id="takoOn"><option value="on" selected>ON</option><option value="off">OFF</option></select></div>
     </div>
   </div>
 
   <div class="card">
     <div class="title">スコア入力</div>
-    <div id="scoreArea" class="grid"></div>
-    <button onclick="calculate()">計算</button>
-    <button class="dark" onclick="saveHole()">このホールを記録して次へ</button>
+    <div class="grid">
+      <div class="scoreBox">
+        <div class="scoreHead"><div><div class="nameLine" id="label1">1番　てるや</div><span class="badge">1番・4番側</span></div><div><label>打数</label><input id="score1" type="number" min="1" inputmode="numeric"></div></div>
+        <label class="opt">砂イチ <span>+10</span><input id="sand1" type="checkbox"></label>
+        <label class="opt">チップイン <span>+10</span><input id="chip1" type="checkbox"></label>
+        <label class="opt">ロングパット <span>+10</span><input id="putt1" type="checkbox"></label>
+      </div>
+      <div class="scoreBox">
+        <div class="scoreHead"><div><div class="nameLine" id="label2">2番　佐藤</div><span class="badge">2番・3番側</span></div><div><label>打数</label><input id="score2" type="number" min="1" inputmode="numeric"></div></div>
+        <label class="opt">砂イチ <span>+10</span><input id="sand2" type="checkbox"></label>
+        <label class="opt">チップイン <span>+10</span><input id="chip2" type="checkbox"></label>
+        <label class="opt">ロングパット <span>+10</span><input id="putt2" type="checkbox"></label>
+      </div>
+      <div class="scoreBox">
+        <div class="scoreHead"><div><div class="nameLine" id="label3">3番　田中</div><span class="badge">2番・3番側</span></div><div><label>打数</label><input id="score3" type="number" min="1" inputmode="numeric"></div></div>
+        <label class="opt">砂イチ <span>+10</span><input id="sand3" type="checkbox"></label>
+        <label class="opt">チップイン <span>+10</span><input id="chip3" type="checkbox"></label>
+        <label class="opt">ロングパット <span>+10</span><input id="putt3" type="checkbox"></label>
+      </div>
+      <div class="scoreBox">
+        <div class="scoreHead"><div><div class="nameLine" id="label4">4番　鈴木</div><span class="badge">1番・4番側</span></div><div><label>打数</label><input id="score4" type="number" min="1" inputmode="numeric"></div></div>
+        <label class="opt">砂イチ <span>+10</span><input id="sand4" type="checkbox"></label>
+        <label class="opt">チップイン <span>+10</span><input id="chip4" type="checkbox"></label>
+        <label class="opt">ロングパット <span>+10</span><input id="putt4" type="checkbox"></label>
+      </div>
+    </div>
+    <button class="btn-main" type="button" onclick="calculate()">計算</button>
+    <button class="btn-next" type="button" onclick="saveHole()">このホールを記録して次へ</button>
   </div>
 
   <div class="card result">
     <div class="small">結果</div>
-    <div class="big" id="winner">---</div>
-    <div class="point-display" id="points">0ポイント</div>
-    <div class="team-view">
-      <div class="team-box"><strong id="teamAname">1番・4番</strong><div class="num" id="teamAnum">--</div></div>
-      <div class="team-box"><strong id="teamBname">2番・3番</strong><div class="num" id="teamBnum">--</div></div>
+    <div id="winner" class="winner">---</div>
+    <div id="pointText" class="points">0ポイント</div>
+    <div class="teamview">
+      <div class="teambox"><small id="teamAName">1番・4番</small><div id="teamANum" class="num">--</div></div>
+      <div class="teambox"><small id="teamBName">2番・3番</small><div id="teamBNum" class="num">--</div></div>
     </div>
-    <div class="small" id="detail" style="margin-top:10px;">スコアを入力して計算してください</div>
-    <div class="small" id="optionDetail" style="margin-top:6px;"></div>
-    <div id="warn" class="warn" style="display:none;"></div>
+    <div id="detail" class="small" style="margin-top:10px">スコアを入力してください</div>
+    <div id="optDetail" class="small" style="margin-top:8px;text-align:left"></div>
   </div>
 
   <div class="card">
     <div class="title">個人合計ポイント</div>
     <div id="totalArea"></div>
-    <button class="red" onclick="resetAll()">合計・記録をリセット</button>
+    <button class="btn-red" type="button" onclick="resetAll()">リセット</button>
   </div>
 
   <div class="card">
     <div class="title">記録</div>
-    <div id="history" class="small">まだ記録はありません</div>
+    <div id="historyArea" class="small">まだ記録はありません</div>
   </div>
 </main>
 
 <script>
-const PLAYER_COUNT=4;
-let totals=JSON.parse(localStorage.getItem("ttg_option_record_totals")||"[0,0,0,0]");
-let history=JSON.parse(localStorage.getItem("ttg_option_record_history")||"[]");
+var names=["てるや","佐藤","田中","鈴木"];
+var totals=[0,0,0,0];
+var history=[];
+var lastResult=null;
 
-function val(id){return Number(document.getElementById(id).value||0)}
-function text(id){return document.getElementById(id).value.trim()}
-function checked(id){const el=document.getElementById(id); return !!(el && el.checked)}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
-function getName(i){return text(`p${i}name`) || `プレイヤー${i}`}
+function E(id){return document.getElementById(id)}
+function V(id){return E(id).value}
+function N(id){return Number(E(id).value||0)}
+function C(id){return E(id).checked}
+function T(id,t){E(id).textContent=t}
+function H(id,t){E(id).innerHTML=t}
+function esc(s){return String(s).replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]})}
 
-function saveNames(){
-  localStorage.setItem("ttg_option_record_names",JSON.stringify([1,2,3,4].map(i=>getName(i))));
-  renderOrderSelects(getOrderSafe());
-  renderScoreInputs(true);
+function readNames(){
+  names=[V("name1")||"プレイヤー1",V("name2")||"プレイヤー2",V("name3")||"プレイヤー3",V("name4")||"プレイヤー4"];
+}
+function applyNames(){
+  readNames();
+  for(var pos=1;pos<=4;pos++){
+    var sel=E("order"+pos);
+    var current=sel.value;
+    sel.innerHTML="";
+    for(var i=1;i<=4;i++){
+      var opt=document.createElement("option");
+      opt.value=i;
+      opt.textContent=names[i-1];
+      sel.appendChild(opt);
+    }
+    sel.value=current;
+  }
+  syncLabels();
   renderTotals();
-  calculate();
 }
-function loadNames(){
-  const names=JSON.parse(localStorage.getItem("ttg_option_record_names")||"null");
-  if(!names)return;
-  names.forEach((n,idx)=>document.getElementById(`p${idx+1}name`).value=n);
+function orderArray(){
+  var arr=[Number(V("order1")),Number(V("order2")),Number(V("order3")),Number(V("order4"))];
+  var seen={};
+  for(var i=0;i<4;i++){ if(seen[arr[i]]){return null;} seen[arr[i]]=true; }
+  return arr;
 }
-function playerOptions(){
-  return [1,2,3,4].map(i=>({id:i,name:getName(i)}));
-}
-function getOrderSafe(){
-  try{
-    const o=[1,2,3,4].map(i=>Number(document.getElementById(`order${i}`).value));
-    return new Set(o).size===4 ? o : [1,2,3,4];
-  }catch(e){
-    return JSON.parse(localStorage.getItem("ttg_option_record_order")||"[1,2,3,4]");
+function syncLabels(){
+  readNames();
+  var arr=orderArray();
+  if(!arr){return;}
+  for(var pos=1;pos<=4;pos++){
+    var pid=arr[pos-1];
+    T("label"+pos,pos+"番　"+names[pid-1]);
   }
 }
-function setOrder(order){
-  for(let i=1;i<=4;i++){
-    const sel=document.getElementById(`order${i}`);
-    if(sel) sel.value=order[i-1];
-  }
-  localStorage.setItem("ttg_option_record_order",JSON.stringify(order));
-}
-function renderOrderSelects(order){
-  const opts=playerOptions();
-  for(let pos=1;pos<=4;pos++){
-    const sel=document.getElementById(`order${pos}`);
-    sel.innerHTML=opts.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
-    sel.value=order[pos-1] || pos;
-    sel.onchange=()=>{
-      localStorage.setItem("ttg_option_record_order",JSON.stringify(getOrderSafe()));
-      renderScoreInputs(true);
-      calculate();
-    };
-  }
-}
-function nextOrder(order){
-  return [order[1],order[2],order[3],order[0]];
-}
-function advanceOrderOnly(){
-  const n=nextOrder(getOrderSafe());
-  renderOrderSelects(n);
-  setOrder(n);
-  renderScoreInputs(false);
-  calculate();
-}
-function readCurrentScoresAndOptions(){
-  const data={};
-  [1,2,3,4].forEach(i=>{
-    const scoreEl=document.getElementById(`p${i}score`);
-    data[i]={
-      score:scoreEl ? scoreEl.value : "",
-      sand:checked(`p${i}_sand`),
-      chip:checked(`p${i}_chip`),
-      putt:checked(`p${i}_putt`)
-    };
-  });
-  return data;
-}
-function renderScoreInputs(keepValues){
-  const old=keepValues ? readCurrentScoresAndOptions() : {};
-  const area=document.getElementById("scoreArea");
-  const order=getOrderSafe();
-  let html="";
-  order.forEach((pid,idx)=>{
-    const pos=idx+1;
-    const teamText=(pos===1||pos===4) ? "1番・4番側" : "2番・3番側";
-    const o=old[pid] || {};
-    html+=`
-      <div class="score-card">
-        <div class="score-head">
-          <div>
-            <div class="name-label">${pos}番　${escapeHtml(getName(pid))}</div>
-            <span class="team-badge">${teamText}</span>
-          </div>
-          <div><label>打数</label><input id="p${pid}score" type="number" value="${escapeHtml(o.score || "")}" min="1" inputmode="numeric"></div>
-        </div>
-        <div class="option-grid">
-          <label class="option">砂イチ <small>+${val("sandPoint") || 10}</small><input type="checkbox" id="p${pid}_sand" ${o.sand?"checked":""}></label>
-          <label class="option">チップイン <small>+${val("chipPoint") || 10}</small><input type="checkbox" id="p${pid}_chip" ${o.chip?"checked":""}></label>
-          <label class="option">ロングパット <small>+${val("puttPoint") || 10}</small><input type="checkbox" id="p${pid}_putt" ${o.putt?"checked":""}></label>
-        </div>
-      </div>`;
-  });
-  area.innerHTML=html;
-}
-function validateOrder(order){
-  return new Set(order).size===4;
-}
-function optionListForPlayer(id){
-  const list=[];
-  if(checked(`p${id}_sand`)) list.push({key:"sand", label:"砂イチ", point:val("sandPoint")});
-  if(checked(`p${id}_chip`)) list.push({key:"chip", label:"チップイン", point:val("chipPoint")});
-  if(checked(`p${id}_putt`)) list.push({key:"putt", label:"ロングパット", point:val("puttPoint")});
+function optList(pos,pid){
+  var list=[];
+  if(V("optionOn")==="off"){return list;}
+  if(C("sand"+pos)){list.push({name:names[pid-1],label:"砂イチ",point:N("sandPt")});}
+  if(C("chip"+pos)){list.push({name:names[pid-1],label:"チップイン",point:N("chipPt")});}
+  if(C("putt"+pos)){list.push({name:names[pid-1],label:"ロングパット",point:N("puttPt")});}
   return list;
 }
-function getTeamPlayers(){
-  const order=getOrderSafe();
-  const warnEl=document.getElementById("warn");
-  if(!validateOrder(order)){
-    warnEl.style.display="block";
-    warnEl.textContent="打順に同じ人が入っています。4人それぞれ別にしてください。";
-    return null;
-  }
-  const mk=(id,pos)=>({
-    id, pos, name:getName(id), score:val(`p${id}score`),
-    options:optionListForPlayer(id)
-  });
-  const all=[mk(order[0],1),mk(order[1],2),mk(order[2],3),mk(order[3],4)];
-  const missing=all.filter(p=>!p.score || p.score<1);
-  if(missing.length){
-    warnEl.style.display="block";
-    warnEl.textContent="4人分の打数を入力してください。";
-    return null;
-  }
-  warnEl.style.display="none";
-  return {a:[all[0],all[3]], b:[all[1],all[2]], all};
+function optPoints(list){
+  var sum=0;
+  for(var i=0;i<list.length;i++){sum+=list[i].point;}
+  return sum;
 }
-function makeVegasNumber(scores){
-  const low=Math.min(...scores), high=Math.max(...scores);
-  let num=Number(String(low)+String(high));
-  if(document.getElementById("takoMode").value==="reverse" && high>=val("takoScore")){
-    num=Number(String(high)+String(low));
-  }
-  return num;
+function optText(list){
+  if(!list.length){return "なし";}
+  var a=[];
+  for(var i=0;i<list.length;i++){a.push(list[i].name+"："+list[i].label+" +"+list[i].point);}
+  return a.join(" / ");
 }
-function roundPoints(diff){
-  const mode=document.getElementById("roundMode").value;
-  if(mode==="none")return diff;
-  if(mode==="up5")return Math.ceil(diff/5)*5;
-  if(mode==="down10")return Math.floor(diff/10)*10;
-  if(mode==="up10")return Math.ceil(diff/10)*10;
+function vegas(s1,s2){
+  var low=Math.min(s1,s2);
+  var high=Math.max(s1,s2);
+  if(V("takoOn")==="on" && high>=N("takoScore")){return Number(String(high)+String(low));}
+  return Number(String(low)+String(high));
+}
+function roundPoint(diff){
+  var m=V("roundMode");
+  if(m==="none"){return diff;}
+  if(m==="up5"){return Math.ceil(diff/5)*5;}
+  if(m==="down10"){return Math.floor(diff/10)*10;}
+  if(m==="up10"){return Math.ceil(diff/10)*10;}
   return diff;
 }
-function optionPoints(players){
-  if(document.getElementById("optionEnabled").value==="off") return 0;
-  return players.reduce((sum,p)=>sum+p.options.reduce((s,o)=>s+o.point,0),0);
-}
-function optionRecords(players){
-  if(document.getElementById("optionEnabled").value==="off") return [];
-  return players.flatMap(p=>p.options.map(o=>({playerId:p.id, playerName:p.name, label:o.label, point:o.point})));
-}
-function optionText(records){
-  if(!records || records.length===0) return "オプションなし";
-  return records.map(r=>`${escapeHtml(r.playerName)}：${escapeHtml(r.label)} +${r.point}`).join(" / ");
-}
-function teamLabel(players){return players.map(p=>p.name).join("・")}
 function calculate(){
-  const teams=getTeamPlayers();
-  if(!teams){
-    document.getElementById("winner").textContent="入力確認";
-    document.getElementById("points").textContent="--";
-    document.getElementById("teamAnum").textContent="--";
-    document.getElementById("teamBnum").textContent="--";
-    document.getElementById("optionDetail").textContent="";
-    return null;
-  }
-  const aNum=makeVegasNumber(teams.a.map(p=>p.score));
-  const bNum=makeVegasNumber(teams.b.map(p=>p.score));
-  const rawDiff=Math.abs(aNum-bNum);
-  const basePoint=roundPoints(rawDiff);
-  const aOpt=optionPoints(teams.a);
-  const bOpt=optionPoints(teams.b);
-  const aRecords=optionRecords(teams.a);
-  const bRecords=optionRecords(teams.b);
-  let aPoint=0,bPoint=0;
-  if(aNum<bNum)aPoint+=basePoint;
-  if(bNum<aNum)bPoint+=basePoint;
-  aPoint+=aOpt;bPoint+=bOpt;
-  const net=aPoint-bPoint;
-  const aName=teamLabel(teams.a), bName=teamLabel(teams.b);
-  let finalWinner="引き分け";
-  if(net>0)finalWinner=aName+" +"+net+"ポイント";
-  if(net<0)finalWinner=bName+" +"+Math.abs(net)+"ポイント";
-  document.getElementById("winner").textContent=finalWinner;
-  document.getElementById("points").textContent=Math.abs(net)+"ポイント";
-  document.getElementById("teamAname").textContent="1番・4番　"+aName;
-  document.getElementById("teamBname").textContent="2番・3番　"+bName;
-  document.getElementById("teamAnum").textContent=aNum;
-  document.getElementById("teamBnum").textContent=bNum;
-  document.getElementById("detail").innerHTML=`<span class="pill">差 ${rawDiff} → ${basePoint}ポイント</span><span class="pill">オプション 1・4番 ${aOpt} / 2・3番 ${bOpt}</span>`;
-  document.getElementById("optionDetail").innerHTML=`1・4番：${optionText(aRecords)}<br>2・3番：${optionText(bRecords)}`;
-  return {hole:val("hole"),aName,bName,aNum,bNum,rawDiff,basePoint,aOpt,bOpt,net,order:getOrderSafe(),aIds:teams.a.map(p=>p.id),bIds:teams.b.map(p=>p.id),aRecords,bRecords};
+  readNames();
+  var arr=orderArray();
+  if(!arr){alert("打順に同じ人がいます。4人を別々にしてください。");return null;}
+  var scores=[N("score1"),N("score2"),N("score3"),N("score4")];
+  for(var i=0;i<4;i++){ if(!scores[i]){alert("4人分の打数を入力してください。");return null;} }
+
+  var aNum=vegas(scores[0],scores[3]);
+  var bNum=vegas(scores[1],scores[2]);
+  var diff=Math.abs(aNum-bNum);
+  var base=roundPoint(diff);
+
+  var aRec=optList(1,arr[0]).concat(optList(4,arr[3]));
+  var bRec=optList(2,arr[1]).concat(optList(3,arr[2]));
+  var aOpt=optPoints(aRec);
+  var bOpt=optPoints(bRec);
+
+  var aPoint=0,bPoint=0;
+  if(aNum<bNum){aPoint+=base;}
+  if(bNum<aNum){bPoint+=base;}
+  aPoint+=aOpt;
+  bPoint+=bOpt;
+
+  var net=aPoint-bPoint;
+  var aName=names[arr[0]-1]+"・"+names[arr[3]-1];
+  var bName=names[arr[1]-1]+"・"+names[arr[2]-1];
+
+  var win="引き分け";
+  if(net>0){win=aName+" +"+net+"ポイント";}
+  if(net<0){win=bName+" +"+Math.abs(net)+"ポイント";}
+
+  T("winner",win);
+  T("pointText",Math.abs(net)+"ポイント");
+  T("teamAName","1番・4番　"+aName);
+  T("teamBName","2番・3番　"+bName);
+  T("teamANum",aNum);
+  T("teamBNum",bNum);
+  H("detail",'<span class="pill">差 '+diff+' → '+base+'ポイント</span><span class="pill">オプション '+aOpt+' / '+bOpt+'</span>');
+  H("optDetail","1・4番："+esc(optText(aRec))+"<br>2・3番："+esc(optText(bRec)));
+
+  lastResult={
+    hole:N("hole"),order:arr.slice(),scores:scores.slice(),aName:aName,bName:bName,aNum:aNum,bNum:bNum,diff:diff,base:base,
+    aOpt:aOpt,bOpt:bOpt,aRec:aRec,bRec:bRec,net:net,
+    aIds:[arr[0],arr[3]],bIds:[arr[1],arr[2]]
+  };
+  return lastResult;
+}
+function nextOrder(r){
+  if(V("nextMode")==="keep"){return r.order.slice();}
+  if(V("nextMode")==="rotate"){return [r.order[1],r.order[2],r.order[3],r.order[0]];}
+  var rows=[
+    {id:r.order[0],score:r.scores[0],pos:1},
+    {id:r.order[1],score:r.scores[1],pos:2},
+    {id:r.order[2],score:r.scores[2],pos:3},
+    {id:r.order[3],score:r.scores[3],pos:4}
+  ];
+  rows.sort(function(a,b){return (a.score-b.score)||(a.pos-b.pos);});
+  return [rows[0].id,rows[1].id,rows[2].id,rows[3].id];
 }
 function saveHole(){
-  const r=calculate();
-  if(!r)return;
-  r.aIds.forEach(id=>totals[id-1]+=r.net);
-  r.bIds.forEach(id=>totals[id-1]-=r.net);
+  var r=calculate();
+  if(!r){return;}
+  for(var i=0;i<r.aIds.length;i++){totals[r.aIds[i]-1]+=r.net;}
+  for(var j=0;j<r.bIds.length;j++){totals[r.bIds[j]-1]-=r.net;}
   history.push(r);
+  E("hole").value=N("hole")+1;
 
-  const newHole=Math.min(18,val("hole")+1);
-  document.getElementById("hole").value=newHole;
+  var nxt=nextOrder(r);
+  for(var k=1;k<=4;k++){E("order"+k).value=nxt[k-1];}
+  syncLabels();
 
-  const n=nextOrder(r.order);
-  renderOrderSelects(n);
-  setOrder(n);
-  renderScoreInputs(false);
-  saveState();
+  for(var p=1;p<=4;p++){
+    E("score"+p).value="";
+    E("sand"+p).checked=false;
+    E("chip"+p).checked=false;
+    E("putt"+p).checked=false;
+  }
   renderTotals();
   renderHistory();
-  calculate();
-}
-function saveState(){
-  localStorage.setItem("ttg_option_record_totals",JSON.stringify(totals));
-  localStorage.setItem("ttg_option_record_history",JSON.stringify(history));
-  localStorage.setItem("ttg_option_record_order",JSON.stringify(getOrderSafe()));
+  T("winner","---");
+  T("pointText","0ポイント");
+  T("teamANum","--");
+  T("teamBNum","--");
+  T("detail","次ホールのスコアを入力してください");
+  T("optDetail","");
 }
 function renderTotals(){
-  const el=document.getElementById("totalArea");
-  el.innerHTML=[1,2,3,4].map(i=>{
-    const p=totals[i-1]||0;
-    const cls=p>0?"plus":p<0?"minus":"";
-    const sign=p>0?"+":"";
-    return `<div class="total-row"><div class="total-name">${escapeHtml(getName(i))}</div><div class="total-point ${cls}">${sign}${p}ポイント</div></div>`;
-  }).join("");
+  var html="";
+  for(var i=0;i<4;i++){
+    var p=totals[i]||0;
+    var cls=p>0?"plus":p<0?"minus":"";
+    var sign=p>0?"+":"";
+    html+='<div class="totalRow"><div>'+esc(names[i])+'</div><div class="'+cls+'">'+sign+p+'ポイント</div></div>';
+  }
+  H("totalArea",html);
 }
 function renderHistory(){
-  const el=document.getElementById("history");
-  if(history.length===0){el.textContent="まだ記録はありません";return}
-  el.innerHTML=history.map(r=>{
-    const txt=r.net>0?`<span class="win">${escapeHtml(r.aName)} +${r.net}</span>`:r.net<0?`<span class="lose">${escapeHtml(r.bName)} +${Math.abs(r.net)}</span>`:`<span>±0</span>`;
-    return `<div class="history-row">
-      <div>${r.hole}H</div>
-      <div>
-        1・4番 ${escapeHtml(r.aName)}：${r.aNum}<br>
-        2・3番 ${escapeHtml(r.bName)}：${r.bNum}<br>
-        <span class="small">差${r.rawDiff}→${r.basePoint} / オプション ${r.aOpt}:${r.bOpt}</span>
-        <div class="option-record">1・4番：${optionText(r.aRecords)}</div>
-        <div class="option-record">2・3番：${optionText(r.bRecords)}</div>
-      </div>
-      <div>${txt}</div>
-    </div>`;
-  }).join("");
+  if(!history.length){T("historyArea","まだ記録はありません");return;}
+  var html="";
+  for(var i=history.length-1;i>=0;i--){
+    var r=history[i];
+    var win=r.net>0?r.aName+" +"+r.net+"ポイント":r.net<0?r.bName+" +"+Math.abs(r.net)+"ポイント":"引き分け";
+    html+='<div class="historyRow"><b>'+r.hole+'H　'+esc(win)+'</b><br>';
+    html+='1・4番 '+esc(r.aName)+'：'+r.aNum+'<br>2・3番 '+esc(r.bName)+'：'+r.bNum+'<br>';
+    html+='差'+r.diff+'→'+r.base+' / オプション '+r.aOpt+':'+r.bOpt+'<br>';
+    html+='1・4番：'+esc(optText(r.aRec))+'<br>2・3番：'+esc(optText(r.bRec))+'</div>';
+  }
+  H("historyArea",html);
 }
 function resetAll(){
-  totals=[0,0,0,0];history=[];saveState();renderTotals();renderHistory();
-  document.getElementById("winner").textContent="---";
-  document.getElementById("points").textContent="0ポイント";
-  document.getElementById("teamAnum").textContent="--";
-  document.getElementById("teamBnum").textContent="--";
-  document.getElementById("detail").textContent="スコアを入力して計算してください";
-  document.getElementById("optionDetail").textContent="";
+  totals=[0,0,0,0];
+  history=[];
+  E("hole").value=1;
+  E("order1").value=1;E("order2").value=2;E("order3").value=3;E("order4").value=4;
+  syncLabels();
+  for(var p=1;p<=4;p++){
+    E("score"+p).value="";
+    E("sand"+p).checked=false;
+    E("chip"+p).checked=false;
+    E("putt"+p).checked=false;
+  }
+  renderTotals();
+  renderHistory();
+  T("winner","---");
+  T("pointText","0ポイント");
+  T("teamANum","--");
+  T("teamBNum","--");
 }
-if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
-loadNames();
-const initialOrder=JSON.parse(localStorage.getItem("ttg_option_record_order")||"[1,2,3,4]");
-renderOrderSelects(initialOrder);
-renderScoreInputs(false);
 renderTotals();
-renderHistory();
+syncLabels();
 </script>
 </body>
 </html>
