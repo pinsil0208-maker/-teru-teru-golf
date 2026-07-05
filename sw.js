@@ -1,19 +1,3 @@
-self.addEventListener('install', function(event) {
-  self.skipWaiting();
-});
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(keys.map(function(key) { return caches.delete(key); }));
-    }).then(function() {
-      return self.registration.unregister();
-    }).then(function() {
-      return self.clients.matchAll();
-    }).then(function(clients) {
-      clients.forEach(function(client) { client.navigate(client.url); });
-    })
-  );
-});
-self.addEventListener('fetch', function(event) {
-  event.respondWith(fetch(event.request));
-});
+self.addEventListener('install',e=>self.skipWaiting());
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>self.registration.unregister())));
+self.addEventListener('fetch',e=>e.respondWith(fetch(e.request)));
