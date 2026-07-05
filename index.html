@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TERU TERU GOLF v4</title>
+<title>TERU TERU GOLF v5</title>
 <style>
 :root{--bg:#07101d;--card:#111a2a;--box:#172435;--in:#070e1a;--line:#2c3a50;--txt:#f7f8fb;--muted:#9ca8b8;--gold:#e8bb3f;--green:#4ac789;--red:#ff6868}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;padding-bottom:30px}
@@ -14,25 +14,27 @@ main{max-width:860px;margin:auto;padding:10px}.card{background:var(--card);borde
 label{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:6px}input,select{width:100%;background:var(--in);color:var(--txt);border:1px solid var(--line);border-radius:13px;padding:12px;font-size:17px}
 button{border:0;border-radius:15px;padding:15px 10px;font-size:17px;font-weight:900}.full{width:100%;margin-top:9px}.gold{background:var(--gold);color:#111}.green{background:var(--green);color:#06130c}.red{background:var(--red);color:#fff}.dark{background:#263346;color:#fff;border:1px solid var(--line)}
 .box{background:var(--box);border:1px solid var(--line);border-radius:17px;padding:12px}.hole{font-size:44px;font-weight:900;color:var(--gold)}.status{font-size:17px;font-weight:900;color:var(--green);min-height:24px;margin-top:6px}.err{color:#fff;background:rgba(255,104,104,.25);border:1px solid var(--red);border-radius:12px;padding:9px;margin-top:8px;font-size:13px;display:none;white-space:pre-wrap}
+.topTotals{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.topTotal{background:#0d1726;border:1px solid var(--line);border-radius:14px;padding:10px}.topName{font-size:13px;color:var(--muted);font-weight:900}.topPoint{font-size:20px;font-weight:900;margin-top:2px}
 .scoreBox{background:var(--box);border:1px solid var(--line);border-radius:18px;padding:12px}.pname{font-size:20px;font-weight:900}.badge{display:inline-block;background:var(--gold);color:#111;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:900;margin-top:5px}
 .step{display:grid;grid-template-columns:66px 1fr 66px;gap:8px;margin:10px 0}.step button{font-size:26px;background:#263346;color:#fff;border:1px solid var(--line)}.num{display:flex;align-items:center;justify-content:center;background:var(--in);border:1px solid var(--line);border-radius:14px;font-size:34px;font-weight:900}
 .quick{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}.quick button{background:#0d1726;color:var(--muted);border:1px solid var(--line);padding:10px 0}
 .opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.opt{background:#0d1726;color:var(--muted);border:1px solid var(--line);font-size:13px;padding:10px 2px}.opt.on{background:var(--gold);color:#111}
 .result{text-align:center}.winner{font-size:24px;font-weight:900;line-height:1.35}.points{font-size:28px;color:var(--gold);font-weight:900}.teamview{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.teambox{background:var(--box);border:1px solid var(--line);border-radius:16px;padding:10px;text-align:center}.teamnum{font-size:30px;font-weight:900}
-.small{font-size:13px;color:var(--muted);line-height:1.6}.totalRow{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.plus{color:var(--green);font-weight:900}.minus{color:var(--red);font-weight:900}
+.small{font-size:13px;color:var(--muted);line-height:1.6}.totalRow{display:grid;grid-template-columns:1fr auto;gap:8px;padding:11px 0;border-bottom:1px solid var(--line);font-size:18px}.plus{color:var(--green);font-weight:900}.minus{color:var(--red);font-weight:900}
 .hist{border-bottom:1px solid var(--line);padding:10px 0;font-size:14px;line-height:1.55}.pill{display:inline-block;background:rgba(232,187,63,.13);border:1px solid rgba(232,187,63,.35);color:#f5d47a;border-radius:999px;padding:5px 9px;margin:3px;font-size:12px;font-weight:900}
-@media(max-width:700px){.grid,.grid4,.teamview{grid-template-columns:1fr}}
+@media(max-width:700px){.grid,.grid4,.teamview,.topTotals{grid-template-columns:1fr 1fr}.grid .scoreBox{grid-column:auto}}
 </style>
 </head>
 <body>
-<header><h1>TERU TERU GOLF</h1><div class="sub">LAS VEGAS v4 DEBUG</div></header>
+<header><h1>TERU TERU GOLF</h1><div class="sub">LAS VEGAS v5 TOTAL FIX</div></header>
 <main>
 <div class="card">
   <div class="small">現在のホール</div>
   <div class="hole"><span id="holeView">1</span>H</div>
-  <div id="status" class="status">v4 読み込みOK</div>
+  <div id="status" class="status">v5 読み込みOK</div>
   <div id="errorBox" class="err"></div>
   <div class="small" id="teamLine"></div>
+  <div class="topTotals" id="topTotals"></div>
 </div>
 
 <div class="card">
@@ -71,11 +73,10 @@ button{border:0;border-radius:15px;padding:15px 10px;font-size:17px;font-weight:
   <div class="grid" id="scoreArea"></div>
   <button type="button" class="full gold" id="calcBtn">計算</button>
   <button type="button" class="full green" id="saveBtn">記録して次ホールへ</button>
-  <button type="button" class="full dark" id="testBtn">ボタンテスト</button>
 </div>
 
 <div class="card result">
-  <div class="small">結果</div>
+  <div class="small">直前ホール結果</div>
   <div id="winner" class="winner">---</div>
   <div id="pointText" class="points">0ポイント</div>
   <div class="teamview"><div class="teambox"><small id="teamAName"></small><div id="teamANum" class="teamnum">--</div></div><div class="teambox"><small id="teamBName"></small><div id="teamBNum" class="teamnum">--</div></div></div>
@@ -118,13 +119,13 @@ function optPts(r){var s=0;for(var i=0;i<r.length;i++)s+=r[i].point;return s}
 function optText(r){return r.length?r.map(function(x){return x.name+"："+x.label+" +"+x.point}).join(" / "):"なし"}
 function vegas(a,b){var lo=Math.min(a,b),hi=Math.max(a,b);return hi>=N("takoScore")?Number(""+hi+lo):Number(""+lo+hi)}
 function round(diff){var m=V("roundMode");if(m==="up5")return Math.ceil(diff/5)*5;if(m==="down10")return Math.floor(diff/10)*10;if(m==="up10")return Math.ceil(diff/10)*10;return diff}
-function calculate(){clearError();var a=orderArray();if(!a){alert("打順に同じ人がいます");return null}var an=vegas(scores[0],scores[3]),bn=vegas(scores[1],scores[2]),diff=Math.abs(an-bn),base=round(diff),ar=optList(1,a[0]).concat(optList(4,a[3])),br=optList(2,a[1]).concat(optList(3,a[2])),ao=optPts(ar),bo=optPts(br),ap=0,bp=0;if(an<bn)ap+=base;if(bn<an)bp+=base;ap+=ao;bp+=bo;var net=ap-bp,aname=names[a[0]-1]+"・"+names[a[3]-1],bname=names[a[1]-1]+"・"+names[a[2]-1],win="引き分け";if(net>0)win=aname+" +"+net+"ポイント";if(net<0)win=bname+" +"+Math.abs(net)+"ポイント";T("winner",win);T("pointText",Math.abs(net)+"ポイント");T("teamAName","1番・4番　"+aname);T("teamBName","2番・3番　"+bname);T("teamANum",an);T("teamBNum",bn);H("detail",'<span class="pill">差 '+diff+' → '+base+'ポイント</span><span class="pill">オプション '+ao+' / '+bo+'</span>');H("optDetail","1・4番："+esc(optText(ar))+"<br>2・3番："+esc(optText(br)));return {hole:N("hole"),order:a,scores:scores.slice(),aName:aname,bName:bname,aNum:an,bNum:bn,diff:diff,base:base,aOpt:ao,bOpt:bo,aRec:ar,bRec:br,net:net,aIds:[a[0],a[3]],bIds:[a[1],a[2]]}}
+function calculate(){clearError();var a=orderArray();if(!a){alert("打順に同じ人がいます");return null}var an=vegas(scores[0],scores[3]),bn=vegas(scores[1],scores[2]),diff=Math.abs(an-bn),base=round(diff),ar=optList(1,a[0]).concat(optList(4,a[3])),br=optList(2,a[1]).concat(optList(3,a[2])),ao=optPts(ar),bo=optPts(br),ap=0,bp=0;if(an<bn)ap+=base;if(bn<an)bp+=base;ap+=ao;bp+=bo;var net=ap-bp,aname=names[a[0]-1]+"・"+names[a[3]-1],bname=names[a[1]-1]+"・"+names[a[2]-1],win="引き分け";if(net>0)win=aname+" +"+net+"ポイント";if(net<0)win=bname+" +"+Math.abs(net)+"ポイント";T("winner",win);T("pointText",Math.abs(net)+"ポイント");T("teamAName","1番・4番　"+aname);T("teamBName","2番・3番　"+bname);T("teamANum",an);T("teamBNum",bn);H("detail",'<span class="pill">差 '+diff+' → '+base+'ポイント</span><span class="pill">オプション '+ao+' / '+bo+'</span>');H("optDetail","1・4番："+esc(optText(ar))+"<br>2・3番："+esc(optText(br)));return {hole:N("hole"),order:a,scores:scores.slice(),aName:aname,bName:bname,aNum:an,bNum:bn,diff:diff,base:base,aOpt:ao,bOpt:bo,aRec:ar,bRec:br,net:net,aIds:[a[0],a[3]],bIds:[a[1],a[2]],winText:win}}
 function nextOrder(r){if(V("nextMode")==="keep")return r.order;if(V("nextMode")==="rotate")return [r.order[1],r.order[2],r.order[3],r.order[0]];return [{id:r.order[0],s:r.scores[0],p:1},{id:r.order[1],s:r.scores[1],p:2},{id:r.order[2],s:r.scores[2],p:3},{id:r.order[3],s:r.scores[3],p:4}].sort(function(x,y){return (x.s-y.s)||(x.p-y.p)}).map(function(x){return x.id})}
-function saveHole(){try{clearError();showStatus("記録ボタン押されました");var r=calculate();if(!r){showStatus("記録できませんでした");return}for(var i=0;i<r.aIds.length;i++)totals[r.aIds[i]-1]+=r.net;for(var j=0;j<r.bIds.length;j++)totals[r.bIds[j]-1]-=r.net;history.push(r);var nextHole=r.hole+1;E("hole").value=nextHole;T("holeView",nextHole);var nx=nextOrder(r);for(var k=1;k<=4;k++)E("order"+k).value=nx[k-1];scores=[4,4,4,4];opts=[{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false}];syncAll();renderHistory();T("winner","---");T("pointText","0ポイント");T("teamANum","--");T("teamBNum","--");T("detail","次ホールのスコアを入力してください");T("optDetail","");showStatus(r.hole+"Hを記録 → "+nextHole+"Hへ進みました")}catch(e){showError(e)}}
-function renderTotals(){var html="";for(var i=0;i<4;i++){var p=totals[i]||0,cls=p>0?"plus":p<0?"minus":"",sg=p>0?"+":"";html+='<div class="totalRow"><div>'+esc(names[i])+'</div><div class="'+cls+'">'+sg+p+'ポイント</div></div>'}H("totalArea",html)}
+function saveHole(){try{clearError();var r=calculate();if(!r){showStatus("記録できませんでした");return}for(var i=0;i<r.aIds.length;i++)totals[r.aIds[i]-1]+=r.net;for(var j=0;j<r.bIds.length;j++)totals[r.bIds[j]-1]-=r.net;history.push(r);renderTotals();renderHistory();var nextHole=r.hole+1;E("hole").value=nextHole;T("holeView",nextHole);var nx=nextOrder(r);for(var k=1;k<=4;k++)E("order"+k).value=nx[k-1];scores=[4,4,4,4];opts=[{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false}];syncAll();T("detail",r.hole+"Hの結果を記録しました<br>次ホールのスコアを入力してください");showStatus(r.hole+"H記録完了　合計更新済み → "+nextHole+"Hへ")}catch(e){showError(e)}}
+function renderTotals(){var html="",top="";for(var i=0;i<4;i++){var p=totals[i]||0,cls=p>0?"plus":p<0?"minus":"",sg=p>0?"+":"";html+='<div class="totalRow"><div>'+esc(names[i])+'</div><div class="'+cls+'">'+sg+p+'ポイント</div></div>';top+='<div class="topTotal"><div class="topName">'+esc(names[i])+'</div><div class="topPoint '+cls+'">'+sg+p+'P</div></div>'}H("totalArea",html);H("topTotals",top)}
 function renderHistory(){if(!history.length){T("historyArea","まだ記録はありません");return}H("historyArea",history.slice().reverse().map(function(r){var w=r.net>0?r.aName+" +"+r.net+"ポイント":r.net<0?r.bName+" +"+Math.abs(r.net)+"ポイント":"引き分け";return '<div class="hist"><b>'+r.hole+'H　'+esc(w)+'</b><br>1・4番 '+esc(r.aName)+'：'+r.aNum+'<br>2・3番 '+esc(r.bName)+'：'+r.bNum+'<br>差'+r.diff+'→'+r.base+' / オプション '+r.aOpt+':'+r.bOpt+'<br>1・4番：'+esc(optText(r.aRec))+'<br>2・3番：'+esc(optText(r.bRec))+'</div>'}).join(""))}
-function resetAll(){totals=[0,0,0,0];history=[];scores=[4,4,4,4];opts=[{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false}];E("hole").value=1;T("holeView",1);E("order1").value=1;E("order2").value=2;E("order3").value=3;E("order4").value=4;syncAll();renderHistory();T("winner","---");T("pointText","0ポイント");T("teamANum","--");T("teamBNum","--");showStatus("リセットしました")}
-function init(){syncAll();E("applyBtn").onclick=applyNames;E("calcBtn").onclick=function(){try{showStatus("計算しました");calculate()}catch(e){showError(e)}};E("saveBtn").onclick=saveHole;E("resetBtn").onclick=resetAll;E("testBtn").onclick=function(){showStatus("ボタンテストOK")};["order1","order2","order3","order4","sandPt","chipPt","puttPt"].forEach(function(id){E(id).onchange=syncAll});E("scoreArea").addEventListener("click",function(ev){var t=ev.target;if(!t.dataset)return;if(t.dataset.act==="minus")addScore(+t.dataset.pos,-1);if(t.dataset.act==="plus")addScore(+t.dataset.pos,1);if(t.dataset.score)setScore(+t.dataset.pos,+t.dataset.score);if(t.dataset.opt)toggleOpt(+t.dataset.pos,t.dataset.opt)})}
+function resetAll(){totals=[0,0,0,0];history=[];scores=[4,4,4,4];opts=[{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false},{sand:false,chip:false,putt:false}];E("hole").value=1;T("holeView",1);E("order1").value=1;E("order2").value=2;E("order3").value=3;E("order4").value=4;syncAll();renderHistory();T("winner","---");T("pointText","0ポイント");T("teamANum","--");T("teamBNum","--");T("detail","スコアを入力してください");T("optDetail","");showStatus("リセットしました")}
+function init(){syncAll();E("applyBtn").onclick=applyNames;E("calcBtn").onclick=function(){try{showStatus("計算しました");calculate()}catch(e){showError(e)}};E("saveBtn").onclick=saveHole;E("resetBtn").onclick=resetAll;["order1","order2","order3","order4","sandPt","chipPt","puttPt"].forEach(function(id){E(id).onchange=syncAll});E("scoreArea").addEventListener("click",function(ev){var t=ev.target;if(t.tagName==="SPAN"&&t.parentNode)t=t.parentNode;if(!t.dataset)return;if(t.dataset.act==="minus")addScore(+t.dataset.pos,-1);if(t.dataset.act==="plus")addScore(+t.dataset.pos,1);if(t.dataset.score)setScore(+t.dataset.pos,+t.dataset.score);if(t.dataset.opt)toggleOpt(+t.dataset.pos,t.dataset.opt)})}
 init();
 })();
 </script>
