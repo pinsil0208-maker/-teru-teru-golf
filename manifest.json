@@ -1,7 +1,7 @@
 {
-  "name": "TERU TERU GOLF EASY v2",
+  "name": "TERU TERU GOLF EASY v3",
   "short_name": "TERU GOLF",
-  "start_url": "index.html",
+  "start_url": "index.html?v=3",
   "display": "standalone",
   "background_color": "#07101d",
   "theme_color": "#07101d"
