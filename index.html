@@ -20,7 +20,7 @@
     header{position:sticky;top:0;z-index:10;text-align:center;padding:calc(14px + env(safe-area-inset-top)) 14px 12px;background:rgba(244,246,241,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
     h1{margin:0;font-size:21px;letter-spacing:.6px;font-weight:950}
     .sub{font-size:12px;color:var(--muted);margin-top:4px}
-    main{max-width:840px;margin:0 auto;padding:0 12px 34px}
+    main{max-width:860px;margin:0 auto;padding:0 12px 34px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin:12px 0;box-shadow:0 2px 10px rgba(0,0,0,.035)}
     .title{font-size:15px;font-weight:950;margin-bottom:10px}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -36,6 +36,7 @@
     .team-badge{display:inline-block;margin-top:4px;font-size:11px;color:var(--green);font-weight:900;background:var(--soft);border-radius:999px;padding:3px 8px}
     .option-grid{display:grid;grid-template-columns:1fr;gap:7px}
     .option{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px;font-weight:800}
+    .option small{color:var(--muted);font-size:11px;font-weight:700}
     .option input{width:auto;transform:scale(1.25)}
     button{width:100%;border:0;border-radius:16px;padding:15px;font-size:17px;font-weight:950;color:#fff;background:var(--green);margin-top:9px}
     button.dark{background:var(--dark)} button.red{background:var(--red)} button.light{background:#555}
@@ -50,8 +51,9 @@
     .total-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line);font-size:16px}
     .total-row:last-child{border-bottom:0}.total-name{font-weight:900}.total-point{font-size:20px;font-weight:950}
     .plus{color:var(--green)}.minus{color:var(--red)}
-    .history-row{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+    .history-row{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
     .history-row:last-child{border-bottom:0}.win{color:var(--green);font-weight:950}.lose{color:var(--red);font-weight:950}
+    .option-record{margin-top:4px;color:#555;font-size:12px;line-height:1.55}
     .note{font-size:12px;color:var(--muted);margin-top:8px}.warn{background:var(--yellow);border:1px solid #f0d98b;border-radius:14px;padding:10px;font-size:13px;line-height:1.55;margin-top:10px}
     @media(max-width:620px){.grid,.team-view{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.big{font-size:31px}}
   </style>
@@ -121,6 +123,7 @@
       <div class="team-box"><strong id="teamBname">2番・3番</strong><div class="num" id="teamBnum">--</div></div>
     </div>
     <div class="small" id="detail" style="margin-top:10px;">スコアを入力して計算してください</div>
+    <div class="small" id="optionDetail" style="margin-top:6px;"></div>
     <div id="warn" class="warn" style="display:none;"></div>
   </div>
 
@@ -138,24 +141,24 @@
 
 <script>
 const PLAYER_COUNT=4;
-let totals=JSON.parse(localStorage.getItem("ttg_points_totals")||"[0,0,0,0]");
-let history=JSON.parse(localStorage.getItem("ttg_points_history")||"[]");
+let totals=JSON.parse(localStorage.getItem("ttg_option_record_totals")||"[0,0,0,0]");
+let history=JSON.parse(localStorage.getItem("ttg_option_record_history")||"[]");
 
 function val(id){return Number(document.getElementById(id).value||0)}
 function text(id){return document.getElementById(id).value.trim()}
-function checked(id){return document.getElementById(id).checked}
+function checked(id){const el=document.getElementById(id); return !!(el && el.checked)}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
 function getName(i){return text(`p${i}name`) || `プレイヤー${i}`}
 
 function saveNames(){
-  localStorage.setItem("ttg_points_names",JSON.stringify([1,2,3,4].map(i=>getName(i))));
+  localStorage.setItem("ttg_option_record_names",JSON.stringify([1,2,3,4].map(i=>getName(i))));
   renderOrderSelects(getOrderSafe());
   renderScoreInputs(true);
   renderTotals();
   calculate();
 }
 function loadNames(){
-  const names=JSON.parse(localStorage.getItem("ttg_points_names")||"null");
+  const names=JSON.parse(localStorage.getItem("ttg_option_record_names")||"null");
   if(!names)return;
   names.forEach((n,idx)=>document.getElementById(`p${idx+1}name`).value=n);
 }
@@ -167,7 +170,7 @@ function getOrderSafe(){
     const o=[1,2,3,4].map(i=>Number(document.getElementById(`order${i}`).value));
     return new Set(o).size===4 ? o : [1,2,3,4];
   }catch(e){
-    return JSON.parse(localStorage.getItem("ttg_points_order")||"[1,2,3,4]");
+    return JSON.parse(localStorage.getItem("ttg_option_record_order")||"[1,2,3,4]");
   }
 }
 function setOrder(order){
@@ -175,7 +178,7 @@ function setOrder(order){
     const sel=document.getElementById(`order${i}`);
     if(sel) sel.value=order[i-1];
   }
-  localStorage.setItem("ttg_points_order",JSON.stringify(order));
+  localStorage.setItem("ttg_option_record_order",JSON.stringify(order));
 }
 function renderOrderSelects(order){
   const opts=playerOptions();
@@ -184,7 +187,7 @@ function renderOrderSelects(order){
     sel.innerHTML=opts.map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
     sel.value=order[pos-1] || pos;
     sel.onchange=()=>{
-      localStorage.setItem("ttg_points_order",JSON.stringify(getOrderSafe()));
+      localStorage.setItem("ttg_option_record_order",JSON.stringify(getOrderSafe()));
       renderScoreInputs(true);
       calculate();
     };
@@ -200,21 +203,28 @@ function advanceOrderOnly(){
   renderScoreInputs(false);
   calculate();
 }
-function renderScoreInputs(keepScores){
-  const oldScores={};
-  if(keepScores){
-    [1,2,3,4].forEach(i=>{
-      const el=document.getElementById(`p${i}score`);
-      if(el) oldScores[i]=el.value;
-    });
-  }
+function readCurrentScoresAndOptions(){
+  const data={};
+  [1,2,3,4].forEach(i=>{
+    const scoreEl=document.getElementById(`p${i}score`);
+    data[i]={
+      score:scoreEl ? scoreEl.value : "",
+      sand:checked(`p${i}_sand`),
+      chip:checked(`p${i}_chip`),
+      putt:checked(`p${i}_putt`)
+    };
+  });
+  return data;
+}
+function renderScoreInputs(keepValues){
+  const old=keepValues ? readCurrentScoresAndOptions() : {};
   const area=document.getElementById("scoreArea");
   const order=getOrderSafe();
   let html="";
   order.forEach((pid,idx)=>{
     const pos=idx+1;
     const teamText=(pos===1||pos===4) ? "1番・4番側" : "2番・3番側";
-    const scoreVal=oldScores[pid] || "";
+    const o=old[pid] || {};
     html+=`
       <div class="score-card">
         <div class="score-head">
@@ -222,12 +232,12 @@ function renderScoreInputs(keepScores){
             <div class="name-label">${pos}番　${escapeHtml(getName(pid))}</div>
             <span class="team-badge">${teamText}</span>
           </div>
-          <div><label>打数</label><input id="p${pid}score" type="number" value="${scoreVal}" min="1" inputmode="numeric"></div>
+          <div><label>打数</label><input id="p${pid}score" type="number" value="${escapeHtml(o.score || "")}" min="1" inputmode="numeric"></div>
         </div>
         <div class="option-grid">
-          <label class="option">砂イチ<input type="checkbox" id="p${pid}_sand"></label>
-          <label class="option">チップイン<input type="checkbox" id="p${pid}_chip"></label>
-          <label class="option">ロングパット<input type="checkbox" id="p${pid}_putt"></label>
+          <label class="option">砂イチ <small>+${val("sandPoint") || 10}</small><input type="checkbox" id="p${pid}_sand" ${o.sand?"checked":""}></label>
+          <label class="option">チップイン <small>+${val("chipPoint") || 10}</small><input type="checkbox" id="p${pid}_chip" ${o.chip?"checked":""}></label>
+          <label class="option">ロングパット <small>+${val("puttPoint") || 10}</small><input type="checkbox" id="p${pid}_putt" ${o.putt?"checked":""}></label>
         </div>
       </div>`;
   });
@@ -235,6 +245,13 @@ function renderScoreInputs(keepScores){
 }
 function validateOrder(order){
   return new Set(order).size===4;
+}
+function optionListForPlayer(id){
+  const list=[];
+  if(checked(`p${id}_sand`)) list.push({key:"sand", label:"砂イチ", point:val("sandPoint")});
+  if(checked(`p${id}_chip`)) list.push({key:"chip", label:"チップイン", point:val("chipPoint")});
+  if(checked(`p${id}_putt`)) list.push({key:"putt", label:"ロングパット", point:val("puttPoint")});
+  return list;
 }
 function getTeamPlayers(){
   const order=getOrderSafe();
@@ -246,7 +263,7 @@ function getTeamPlayers(){
   }
   const mk=(id,pos)=>({
     id, pos, name:getName(id), score:val(`p${id}score`),
-    sand:checked(`p${id}_sand`), chip:checked(`p${id}_chip`), putt:checked(`p${id}_putt`)
+    options:optionListForPlayer(id)
   });
   const all=[mk(order[0],1),mk(order[1],2),mk(order[2],3),mk(order[3],4)];
   const missing=all.filter(p=>!p.score || p.score<1);
@@ -276,13 +293,15 @@ function roundPoints(diff){
 }
 function optionPoints(players){
   if(document.getElementById("optionEnabled").value==="off") return 0;
-  let p=0;
-  players.forEach(x=>{
-    if(x.sand)p+=val("sandPoint");
-    if(x.chip)p+=val("chipPoint");
-    if(x.putt)p+=val("puttPoint");
-  });
-  return p;
+  return players.reduce((sum,p)=>sum+p.options.reduce((s,o)=>s+o.point,0),0);
+}
+function optionRecords(players){
+  if(document.getElementById("optionEnabled").value==="off") return [];
+  return players.flatMap(p=>p.options.map(o=>({playerId:p.id, playerName:p.name, label:o.label, point:o.point})));
+}
+function optionText(records){
+  if(!records || records.length===0) return "オプションなし";
+  return records.map(r=>`${escapeHtml(r.playerName)}：${escapeHtml(r.label)} +${r.point}`).join(" / ");
 }
 function teamLabel(players){return players.map(p=>p.name).join("・")}
 function calculate(){
@@ -292,6 +311,7 @@ function calculate(){
     document.getElementById("points").textContent="--";
     document.getElementById("teamAnum").textContent="--";
     document.getElementById("teamBnum").textContent="--";
+    document.getElementById("optionDetail").textContent="";
     return null;
   }
   const aNum=makeVegasNumber(teams.a.map(p=>p.score));
@@ -300,6 +320,8 @@ function calculate(){
   const basePoint=roundPoints(rawDiff);
   const aOpt=optionPoints(teams.a);
   const bOpt=optionPoints(teams.b);
+  const aRecords=optionRecords(teams.a);
+  const bRecords=optionRecords(teams.b);
   let aPoint=0,bPoint=0;
   if(aNum<bNum)aPoint+=basePoint;
   if(bNum<aNum)bPoint+=basePoint;
@@ -316,7 +338,8 @@ function calculate(){
   document.getElementById("teamAnum").textContent=aNum;
   document.getElementById("teamBnum").textContent=bNum;
   document.getElementById("detail").innerHTML=`<span class="pill">差 ${rawDiff} → ${basePoint}ポイント</span><span class="pill">オプション 1・4番 ${aOpt} / 2・3番 ${bOpt}</span>`;
-  return {hole:val("hole"),aName,bName,aNum,bNum,rawDiff,basePoint,aOpt,bOpt,net,order:getOrderSafe(),aIds:teams.a.map(p=>p.id),bIds:teams.b.map(p=>p.id)};
+  document.getElementById("optionDetail").innerHTML=`1・4番：${optionText(aRecords)}<br>2・3番：${optionText(bRecords)}`;
+  return {hole:val("hole"),aName,bName,aNum,bNum,rawDiff,basePoint,aOpt,bOpt,net,order:getOrderSafe(),aIds:teams.a.map(p=>p.id),bIds:teams.b.map(p=>p.id),aRecords,bRecords};
 }
 function saveHole(){
   const r=calculate();
@@ -324,6 +347,7 @@ function saveHole(){
   r.aIds.forEach(id=>totals[id-1]+=r.net);
   r.bIds.forEach(id=>totals[id-1]-=r.net);
   history.push(r);
+
   const newHole=Math.min(18,val("hole")+1);
   document.getElementById("hole").value=newHole;
 
@@ -337,9 +361,9 @@ function saveHole(){
   calculate();
 }
 function saveState(){
-  localStorage.setItem("ttg_points_totals",JSON.stringify(totals));
-  localStorage.setItem("ttg_points_history",JSON.stringify(history));
-  localStorage.setItem("ttg_points_order",JSON.stringify(getOrderSafe()));
+  localStorage.setItem("ttg_option_record_totals",JSON.stringify(totals));
+  localStorage.setItem("ttg_option_record_history",JSON.stringify(history));
+  localStorage.setItem("ttg_option_record_order",JSON.stringify(getOrderSafe()));
 }
 function renderTotals(){
   const el=document.getElementById("totalArea");
@@ -355,7 +379,17 @@ function renderHistory(){
   if(history.length===0){el.textContent="まだ記録はありません";return}
   el.innerHTML=history.map(r=>{
     const txt=r.net>0?`<span class="win">${escapeHtml(r.aName)} +${r.net}</span>`:r.net<0?`<span class="lose">${escapeHtml(r.bName)} +${Math.abs(r.net)}</span>`:`<span>±0</span>`;
-    return `<div class="history-row"><div>${r.hole}H</div><div>1・4番 ${escapeHtml(r.aName)}:${r.aNum}<br>2・3番 ${escapeHtml(r.bName)}:${r.bNum}<br><span class="small">差${r.rawDiff}→${r.basePoint} オプション${r.aOpt}/${r.bOpt}</span></div><div>${txt}</div></div>`;
+    return `<div class="history-row">
+      <div>${r.hole}H</div>
+      <div>
+        1・4番 ${escapeHtml(r.aName)}：${r.aNum}<br>
+        2・3番 ${escapeHtml(r.bName)}：${r.bNum}<br>
+        <span class="small">差${r.rawDiff}→${r.basePoint} / オプション ${r.aOpt}:${r.bOpt}</span>
+        <div class="option-record">1・4番：${optionText(r.aRecords)}</div>
+        <div class="option-record">2・3番：${optionText(r.bRecords)}</div>
+      </div>
+      <div>${txt}</div>
+    </div>`;
   }).join("");
 }
 function resetAll(){
@@ -365,10 +399,11 @@ function resetAll(){
   document.getElementById("teamAnum").textContent="--";
   document.getElementById("teamBnum").textContent="--";
   document.getElementById("detail").textContent="スコアを入力して計算してください";
+  document.getElementById("optionDetail").textContent="";
 }
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
 loadNames();
-const initialOrder=JSON.parse(localStorage.getItem("ttg_points_order")||"[1,2,3,4]");
+const initialOrder=JSON.parse(localStorage.getItem("ttg_option_record_order")||"[1,2,3,4]");
 renderOrderSelects(initialOrder);
 renderScoreInputs(false);
 renderTotals();
